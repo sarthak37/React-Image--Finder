@@ -1,24 +1,47 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from 'react';
+import BreadCrumb from './components/BreadCrumb';
+import Navbar from './components/Navbar';
+import { getImages } from './services/api';
+import Images from './components/Images';
+import SnackBar from './components/SnackBar';
 
 function App() {
+  const[data, setData] = useState([]);
+  const [text, setText] = useState('mountains');
+  const [count, setCount] = useState(20);
+  const [open, toggleSnack] = useState(false);
+
+
+  useEffect(() => {
+
+    if(count < 3 || count > 200){
+      toggleSnack(true);
+      return;
+    }
+
+    toggleSnack(false);
+
+  getImages(text, count).then(res => {
+    setData(res.data.hits)
+    console.log(res.data.hits);
+  }, )
+},[text, count])
+
+const onTextChange = (text) => {
+  console.log(text)
+  setText(text);
+}
+
+const onCountChange = (count) => {
+  setCount(count);
+}
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <Navbar/>
+      <BreadCrumb onTextChange={onTextChange} onCountChange={onCountChange}/>
+      <Images data = {data}/>
+      <SnackBar open = {open} toggleSnack={toggleSnack}/>
+    </>
   );
 }
 
